@@ -126,8 +126,8 @@ select.fake-input option { background: #1a1a1a; color: var(--text-light); }
 
 /* ===== FOOTER ===== */
 .footer { background: #050505; border-top: 1px solid var(--dark-border); padding: 40px 0 25px; }
-.footer-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
-.footer-logo img { height: 50px; }
+.footer-top { display: flex; align-items: center; justify-content: center; margin-bottom: 25px; }
+.footer-logo img { height: 70px; }
 .footer-links { display: flex; gap: 25px; }
 .footer-links a { color: var(--text-muted); font-size: 0.88rem; transition: color 0.2s; }
 .footer-links a:hover { color: var(--primary-gold); }
@@ -210,7 +210,7 @@ select.fake-input option { background: #1a1a1a; color: var(--text-light); }
     .fake-input { padding: 0.677vw 0.781vw; font-size: 0.625vw; margin-bottom: 0.625vw; border-radius: 0.313vw; }
     .footer { padding: 2.083vw 0 1.302vw; }
     .footer-top { margin-bottom: 1.302vw; }
-    .footer-logo img { height: 2.604vw; }
+    .footer-logo img { height: 3.646vw; }
     .footer-links { gap: 1.302vw; }
     .footer-links a { font-size: 0.625vw; }
     .footer-bottom { padding-top: 1.042vw; font-size: 0.521vw; }
@@ -278,7 +278,7 @@ select.fake-input option { background: #1a1a1a; color: var(--text-light); }
     .fake-input { padding: 11px 13px; font-size: 0.85rem; margin-bottom: 10px; }
     .footer { padding: 28px 0 18px; }
     .footer-top { flex-direction: column; gap: 15px; text-align: center; }
-    .footer-logo img { height: 36px; }
+    .footer-logo img { height: 55px; }
     .footer-links { flex-wrap: wrap; justify-content: center; gap: 12px; }
     .footer-links a { font-size: 0.8rem; }
     .footer-bottom { font-size: 0.75rem; padding-top: 14px; }

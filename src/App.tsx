@@ -329,12 +329,6 @@ function App() {
             <div className="footer-logo">
               <img src="/Image-box/Main-Logo-2.png" alt="Logo" />
             </div>
-            <div className="footer-links">
-              <a href="#equipment">Equipment</a>
-              <a href="#quote">Get a Quote</a>
-              <a href="#">Privacy Policy</a>
-              <a href="#">Terms</a>
-            </div>
           </div>
           <div className="footer-bottom">
             <p>&copy; 2024 All rights reserved. | Heavy equipment sourced from certified Chinese manufacturers. Delivery terms apply.</p>
