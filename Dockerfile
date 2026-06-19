@@ -45,25 +45,25 @@ RUN npm run build
  
 ########## Stage 2: Runtime ##########
 FROM node:20-alpine
- 
+
 WORKDIR /app
- 
+
 # Install minimal static file server
 RUN npm install -g serve@14
- 
+
 # Create non-root user
 RUN addgroup -g 1001 -S appgroup && \
     adduser -S appuser -u 1001 -G appgroup
- 
+
 # Copy built files only
 COPY --from=builder /app/dist ./dist
- 
+
 # Fix permissions
 RUN chown -R appuser:appgroup /app
- 
+
 USER appuser
- 
+
 EXPOSE 4173
- 
+
 # Serve SPA (single-page app support)
 CMD ["serve", "-s", "dist", "-l", "4173"]
