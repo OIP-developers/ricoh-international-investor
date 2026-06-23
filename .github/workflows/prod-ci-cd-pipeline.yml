@@ -64,6 +64,24 @@ jobs:
           echo "Docker is healthy"
 
       # --------------------------
+      # Create Build-Time Environment File
+      # --------------------------
+      - name: Create .env (build-time only)
+        env:
+          ENV_FILE: ${{ secrets.ENV_DEV }}
+        run: |
+          set -euo pipefail
+
+          printf "%s" "$ENV_FILE" > .env
+
+          if [ ! -s .env ]; then
+            echo "ERROR: .env file is empty"
+            exit 1
+          fi
+
+          echo ".env file created successfully"
+
+      # --------------------------
       # Build Docker Image
       # --------------------------
       - name: Build Docker image
@@ -95,6 +113,25 @@ jobs:
     needs: build
 
     steps:
+
+      # --------------------------
+      # Create Runtime Environment File
+      # --------------------------
+      - name: Create deployment .env
+        env:
+          ENV_FILE: ${{ secrets.ENV_DEV }}
+        run: |
+          set -euo pipefail
+
+          printf "%s" "$ENV_FILE" > .env
+
+          if [ ! -s .env ]; then
+            echo "ERROR: Deployment .env is empty"
+            exit 1
+          fi
+
+          echo "Deployment .env created"
+
       # --------------------------
       # Deploy Container
       # --------------------------
@@ -177,6 +214,7 @@ jobs:
           docker run -d \
             --name "$CONTAINER_NAME" \
             -p "$APP_PORT:4173" \
+            --env-file .env \
             --restart unless-stopped \
             "$FULL_IMAGE_NAME" || {
               echo "ERROR: Failed to start container"
