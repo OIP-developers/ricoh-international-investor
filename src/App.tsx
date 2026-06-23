@@ -1,8 +1,100 @@
+import { useState } from 'react'
 import '../page-2.css'
 
+type Toast = { message: string; type: 'success' | 'error' } | null
+
 function App() {
+  // ── Toast ──────────────────────────────────────────────────────────────────
+  const [toast, setToast] = useState<Toast>(null)
+
+  function showToast(message: string, type: 'success' | 'error') {
+    setToast({ message, type })
+    setTimeout(() => setToast(null), 4500)
+  }
+
+  // ── Hero form state ────────────────────────────────────────────────────────
+  const [heroForm, setHeroForm] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    equipmentType: '',
+    deliveryLocation: '',
+  })
+  const [heroLoading, setHeroLoading] = useState(false)
+  const [heroError, setHeroError] = useState('')
+
+  async function handleHeroSubmit(e: { preventDefault(): void }) {
+    e.preventDefault()
+    setHeroError('')
+    setHeroLoading(true)
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(heroForm),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setHeroForm({ fullName: '', email: '', phone: '', equipmentType: '', deliveryLocation: '' })
+        showToast("Thank you! We'll get back to you within 24 hours.", 'success')
+      } else {
+        setHeroError(data.message || 'Something went wrong. Please try again.')
+      }
+    } catch {
+      setHeroError('Failed to send. Please try again.')
+    } finally {
+      setHeroLoading(false)
+    }
+  }
+
+  // ── Bottom form state ──────────────────────────────────────────────────────
+  const [bottomForm, setBottomForm] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    equipmentType: '',
+    quantity: '',
+    deliveryLocation: '',
+    notes: '',
+  })
+  const [bottomLoading, setBottomLoading] = useState(false)
+  const [bottomError, setBottomError] = useState('')
+
+  async function handleBottomSubmit(e: { preventDefault(): void }) {
+    e.preventDefault()
+    setBottomError('')
+    setBottomLoading(true)
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bottomForm),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setBottomForm({ firstName: '', lastName: '', email: '', phone: '', equipmentType: '', quantity: '', deliveryLocation: '', notes: '' })
+        showToast("Quote request sent! We'll respond within 24 hours.", 'success')
+      } else {
+        setBottomError(data.message || 'Something went wrong. Please try again.')
+      }
+    } catch {
+      setBottomError('Failed to send. Please try again.')
+    } finally {
+      setBottomLoading(false)
+    }
+  }
+
   return (
     <>
+      {/* TOAST */}
+      {toast && (
+        <div className={`toast toast-${toast.type}`}>
+          <i className={`fa-solid ${toast.type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'}`}></i>
+          {toast.message}
+        </div>
+      )}
+
       {/* NAVBAR */}
       <nav className="navbar">
         <div className="container">
@@ -44,20 +136,54 @@ function App() {
               <div className="hero-form-box">
                 <h3>Get Your <span className="gold-text">Free Quote</span></h3>
                 <p className="form-tagline">Tell us what you need — we'll get back to you within 24 hours</p>
-                <input type="text" className="fake-input" placeholder="Your Full Name" />
-                <input type="email" className="fake-input" placeholder="Email Address" />
-                <input type="tel" className="fake-input" placeholder="Phone / WhatsApp Number" />
-                <select className="fake-input" defaultValue="">
-                  <option value="" disabled>Select Equipment Type</option>
-                  <option>Motor Grader</option>
-                  <option>Excavator</option>
-                  <option>Dozer / Bulldozer</option>
-                  <option>Agricultural Machinery</option>
-                  <option>Mining Equipment</option>
-                  <option>Other</option>
-                </select>
-                <input type="text" className="fake-input" placeholder="Delivery Location (e.g. Doha, Qatar)" />
-                <button className="btn-gold">Send My Inquiry &nbsp;<i className="fa-solid fa-arrow-right"></i></button>
+                <form onSubmit={handleHeroSubmit}>
+                  <input
+                    type="text"
+                    className="fake-input"
+                    placeholder="Your Full Name"
+                    value={heroForm.fullName}
+                    onChange={e => setHeroForm(f => ({ ...f, fullName: e.target.value }))}
+                  />
+                  <input
+                    type="email"
+                    className="fake-input"
+                    placeholder="Email Address"
+                    value={heroForm.email}
+                    onChange={e => setHeroForm(f => ({ ...f, email: e.target.value }))}
+                  />
+                  <input
+                    type="tel"
+                    className="fake-input"
+                    placeholder="Phone / WhatsApp Number"
+                    value={heroForm.phone}
+                    onChange={e => setHeroForm(f => ({ ...f, phone: e.target.value }))}
+                  />
+                  <select
+                    className="fake-input"
+                    title="Equipment Type"
+                    value={heroForm.equipmentType}
+                    onChange={e => setHeroForm(f => ({ ...f, equipmentType: e.target.value }))}
+                  >
+                    <option value="" disabled>Select Equipment Type</option>
+                    <option>Motor Grader</option>
+                    <option>Excavator</option>
+                    <option>Dozer / Bulldozer</option>
+                    <option>Agricultural Machinery</option>
+                    <option>Mining Equipment</option>
+                    <option>Other</option>
+                  </select>
+                  <input
+                    type="text"
+                    className="fake-input"
+                    placeholder="Delivery Location (e.g. Doha, Qatar)"
+                    value={heroForm.deliveryLocation}
+                    onChange={e => setHeroForm(f => ({ ...f, deliveryLocation: e.target.value }))}
+                  />
+                  {heroError && <p className="form-error">{heroError}</p>}
+                  <button type="submit" className="btn-gold" disabled={heroLoading}>
+                    {heroLoading ? 'Sending…' : <>Send My Inquiry &nbsp;<i className="fa-solid fa-arrow-right"></i></>}
+                  </button>
+                </form>
                 <p className="form-note"><i className="fa-solid fa-lock"></i> 100% confidential. No spam, ever.</p>
               </div>
             </div>
@@ -299,23 +425,75 @@ function App() {
             <div className="ghl-form-box">
               <h3>Get Your <span className="gold-text">Free Quote</span></h3>
               <p className="form-tagline">Fill in your details — we'll respond within 24 hours</p>
-              <input type="text" className="fake-input" placeholder="First Name" />
-              <input type="text" className="fake-input" placeholder="Last Name" />
-              <input type="email" className="fake-input" placeholder="Email Address" />
-              <input type="tel" className="fake-input" placeholder="Phone / WhatsApp Number" />
-              <select className="fake-input" defaultValue="">
-                <option value="" disabled>Select Equipment Type</option>
-                <option>Motor Grader</option>
-                <option>Excavator</option>
-                <option>Dozer / Bulldozer</option>
-                <option>Agricultural Machinery</option>
-                <option>Mining Equipment</option>
-                <option>Other</option>
-              </select>
-              <input type="text" className="fake-input" placeholder="Quantity Required" />
-              <input type="text" className="fake-input" placeholder="Delivery Location (e.g. Doha, Qatar)" />
-              <textarea className="fake-input" rows={3} placeholder="Additional Requirements or Notes" style={{ resize: 'vertical' }}></textarea>
-              <button className="btn-gold">Send My Quote Request &nbsp;<i className="fa-solid fa-arrow-right"></i></button>
+              <form onSubmit={handleBottomSubmit}>
+                <input
+                  type="text"
+                  className="fake-input"
+                  placeholder="First Name"
+                  value={bottomForm.firstName}
+                  onChange={e => setBottomForm(f => ({ ...f, firstName: e.target.value }))}
+                />
+                <input
+                  type="text"
+                  className="fake-input"
+                  placeholder="Last Name"
+                  value={bottomForm.lastName}
+                  onChange={e => setBottomForm(f => ({ ...f, lastName: e.target.value }))}
+                />
+                <input
+                  type="email"
+                  className="fake-input"
+                  placeholder="Email Address"
+                  value={bottomForm.email}
+                  onChange={e => setBottomForm(f => ({ ...f, email: e.target.value }))}
+                />
+                <input
+                  type="tel"
+                  className="fake-input"
+                  placeholder="Phone / WhatsApp Number"
+                  value={bottomForm.phone}
+                  onChange={e => setBottomForm(f => ({ ...f, phone: e.target.value }))}
+                />
+                <select
+                  className="fake-input"
+                  title="Equipment Type"
+                  value={bottomForm.equipmentType}
+                  onChange={e => setBottomForm(f => ({ ...f, equipmentType: e.target.value }))}
+                >
+                  <option value="" disabled>Select Equipment Type</option>
+                  <option>Motor Grader</option>
+                  <option>Excavator</option>
+                  <option>Dozer / Bulldozer</option>
+                  <option>Agricultural Machinery</option>
+                  <option>Mining Equipment</option>
+                  <option>Other</option>
+                </select>
+                <input
+                  type="text"
+                  className="fake-input"
+                  placeholder="Quantity Required"
+                  value={bottomForm.quantity}
+                  onChange={e => setBottomForm(f => ({ ...f, quantity: e.target.value }))}
+                />
+                <input
+                  type="text"
+                  className="fake-input"
+                  placeholder="Delivery Location (e.g. Doha, Qatar)"
+                  value={bottomForm.deliveryLocation}
+                  onChange={e => setBottomForm(f => ({ ...f, deliveryLocation: e.target.value }))}
+                />
+                <textarea
+                  className="fake-input textarea-notes"
+                  rows={3}
+                  placeholder="Additional Requirements or Notes"
+                  value={bottomForm.notes}
+                  onChange={e => setBottomForm(f => ({ ...f, notes: e.target.value }))}
+                ></textarea>
+                {bottomError && <p className="form-error">{bottomError}</p>}
+                <button type="submit" className="btn-gold" disabled={bottomLoading}>
+                  {bottomLoading ? 'Sending…' : <>Send My Quote Request &nbsp;<i className="fa-solid fa-arrow-right"></i></>}
+                </button>
+              </form>
               <p className="form-note"><i className="fa-solid fa-lock"></i> Your information is 100% secure. We never share or sell your details.</p>
             </div>
           </div>
